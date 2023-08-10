@@ -1,4 +1,4 @@
-#! /bin/bash
+ #! /usr/bin/env bash
 
 domain_name=ghost.home.arpa
 

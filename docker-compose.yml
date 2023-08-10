@@ -2,9 +2,9 @@ version: '3.1'
 
 services:
 
-  mysql:
+  db:
     image: mysql:8.0
-    container_name: mysql
+    container_name: ghost_db
     restart: unless-stopped
     env_file: .env
     environment:
@@ -12,25 +12,27 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_TCP_PORT: ${DB_PORT}
     volumes: 
-      - mysql_vol:/var/lib/mysql
+      - db_vol:/var/lib/mysql
     networks:
       - ghost-net
 
   ghost:
     depends_on: 
-      - mysql
+      - db
     image: ghost:5-alpine
-    container_name: wordpress
+    container_name: ghost
     restart: unless-stopped
     env_file: .env
     environment:
       # see https://ghost.org/docs/config/#configuration-options
       database__client: mysql
-      database__connection__host: mysql
+      database__connection__host: db
       database__connection__user: ${DB_USER}
       database__connection__password: ${DB_PASSWORD}
       database__connection__database: ${DB_NAME}
+      database__connection__port: ${DB_PORT}
       url: https://${LOCAL_DOMAIN}
     networks:
       - ghost-net
@@ -39,7 +41,7 @@ services:
     depends_on:
       - ghost
     image: nginx:1.25-alpine
-    container_name: proxy
+    container_name: ghost_proxy
     restart: unless-stopped
     env_file: .env
     ports:
@@ -53,7 +55,7 @@ services:
 
 volumes:
   ghost_vol:
-  mysql_vol:
+  db_vol:
 
 networks:
   ghost-net:

@@ -9,9 +9,10 @@ https://ghost.org/docs/
 ```
 DB_NAME=ghost
 DB_USER=ghost
-DB_PASSWORD=password
-DB_ROOT_PASSWORD=password
+DB_PASSWORD=gpassword
+DB_ROOT_PASSWORD=gpassword
 LOCAL_DOMAIN=ghost.home.arpa
+DB_PORT=33306
 ```
 Note: These are BAD user names and passwords. Do not even think about using them in a Production environment
 

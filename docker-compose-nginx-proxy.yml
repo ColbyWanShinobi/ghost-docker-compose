@@ -1,21 +1,40 @@
 version: '3.1'
 services:
+  
+  db:
+    image: mysql:8.0
+    container_name: ghost_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_TCP_PORT: ${DB_PORT}
+    volumes: 
+      - db_vol:/var/lib/mysql
+    networks:
+      - ghost-net
 
   ghost:
+    depends_on: 
+      - db
     image: ghost:5-alpine
     container_name: ghost
     restart: unless-stopped
     env_file: .env
     environment:
       # see https://ghost.org/docs/config/#configuration-options
-      database__client: sqlite3
-      database__connection__filename: /var/lib/ghost/content/data/ghost.db
+      database__client: mysql
+      database__connection__host: db
+      database__connection__user: ${DB_USER}
+      database__connection__password: ${DB_PASSWORD}
+      database__connection__database: ${DB_NAME}
+      database__connection__port: ${DB_PORT}
       url: https://${LOCAL_DOMAIN}
       VIRTUAL_HOST: ${LOCAL_DOMAIN}
       VIRTUAL_POST: 2368
-    volumes:
-      #sqlite db location = /var/lib/ghost/content/data/ghost.db
-      - ghost_vol:/var/lib/ghost/content
     networks:
       - ghost-net
 

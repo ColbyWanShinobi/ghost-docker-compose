@@ -33,15 +33,13 @@ services:
       database__connection__database: ${DB_NAME}
       database__connection__port: ${DB_PORT}
       url: https://${LOCAL_DOMAIN}
-      VIRTUAL_HOST: ${LOCAL_DOMAIN}
-      VIRTUAL_POST: 2368
     networks:
       - ghost-net
 
   proxy:
     depends_on:
       - ghost
-    image: nginxproxy/nginx-proxy:alpine
+    image: nginx:1.25-alpine
     container_name: ghost_proxy
     restart: unless-stopped
     env_file: .env
@@ -49,8 +47,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./certs:/etc/nginx/certs:ro
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+      - ./nginx-config/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - ghost-net
 

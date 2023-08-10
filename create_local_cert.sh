@@ -1,6 +1,11 @@
  #! /usr/bin/env bash
 
-domain_name=ghost.home.arpa
+if [[ -z ${1} ]]
+then
+  domain_name=ghost.home.arpa
+else
+  domain_name=${1}
+fi
 
 current_script=$0
 script_path=$(dirname ${current_script})
